@@ -29,14 +29,17 @@ ARG DEV=false
 RUN apk update && \
     apk add --no-cache libffi-dev openssl-dev gcc musl-dev && \
     apk add bash && \
-#    ln -s /bin/ash /bin/sh && \
+    apk add --update --no-cache postgresql-client && \
+    apk add --update --no-cache --virtual .tmp-build-deps build-base \
+      postgresql-dev musl-dev &&\
     python3 -m venv /py && \
     /py/bin/pip install --upgrade pip && \
     /py/bin/pip install -r /tmp/requirements.txt && \
     if [ $DEV="true" ];  \
-    then /py/bin/pip install -r /tmp/requirements.dev.txt; \
+      then /py/bin/pip install -r /tmp/requirements.dev.txt; \
     fi &&\
     rm -rf /tmp && \
+    apk del .tmp-build-deps &&\
     adduser -D django-user
 
 #    adduser \
