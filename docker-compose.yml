@@ -2,31 +2,47 @@ version: "3.9"
 
 services:
   app:
+    container_name: recipe_app
     build:
       context: .
       args:
         - DEV=true
+    networks:
+      - recipe_network
     ports:
       - "8000:8000"
     volumes:
       - "./app:/app"
     command: >
-      sh -c "python manage.py runserver 0.0.0.0:8000"
+      sh -c "python manage.py wait_for_db && 
+      python manage.py migrate &&
+      python manage.py runserver 0.0.0.0:8000"
     environment:
-      - DB_HOST:db
-      - DB_NAME=dev_db
-      - DB_USER=dev_user
-      - DB_PASSWORD=ashish
+      - PG_USER=ashish
+      - PG_PASSWORD=ashish
+      - PG_DB=recipe
+      - PG_PORT=5432
+      - PG_HOST=db
     depends_on:
       - db
-  db:
-    image: postgres:13-alpine
-    volumes:
-      - dev-db-data:/var/lib/postgresql/data
-    environment:
-      - POSTGRES_DB:dev_db
-      - POSTGRES_USER=dev_user
-      - POSTGRES_PASSWORD=ashish
-volumes:
-  dev-db-data:
 
+  db:
+    container_name: db
+    image: postgres:13-alpine
+    environment:
+      - POSTGRES_USER:ashish
+      - POSTGRES_PASSWORD:ashish
+      - POSTGRES_DB:recipe
+    ports:
+      - "5432:5432"
+    networks:
+      - recipe_network
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:
+
+networks:
+  recipe_network:
+    driver: bridge
