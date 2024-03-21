@@ -30,9 +30,9 @@ services:
     container_name: db
     image: postgres:13-alpine
     environment:
-      - POSTGRES_USER:ashish
-      - POSTGRES_PASSWORD:ashish
-      - POSTGRES_DB:recipe
+      - POSTGRES_USER=ashish
+      - POSTGRES_PASSWORD=ashish
+      - POSTGRES_DB=recipe
     ports:
       - "5432:5432"
     networks:

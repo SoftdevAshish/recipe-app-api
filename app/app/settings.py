@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-v$gcps%cesu$rlh06da3q6h0woapd8k7g_zrc$1(z)@bmji2lk
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0', '192.168.1.65']
 
 # Application definition
 
@@ -36,7 +36,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'core'
+    'core',
+    'rest_framework',
+    'rest_framework.authtoken',
+    'drf_spectacular',
+    'user'
 ]
 
 MIDDLEWARE = [
@@ -123,3 +127,17 @@ STATIC_URL = '/static/'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+AUTH_USER_MODEL = 'core.User'
+
+REST_FRAMEWORK = {
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Recipe Application API',
+    'DESCRIPTION': 'Documentation  Recipe Application API endpoints.',
+    'VERSION': '1.0.0',
+    # Other settings...
+}
+
