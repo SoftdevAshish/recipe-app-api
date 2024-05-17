@@ -5,15 +5,16 @@ ENV PYTHONUNBUFFERED 1
 
 COPY ./requirements.txt /temp/requirements.txt
 COPY ./requirements.dev.txt /temp/requirements.dev.txt
+COPY ./scripts /scripts
 COPY ./app /app
 WORKDIR /app
 EXPOSE 8000
 
 ARG DEV=false
 RUN pip install --upgrade pip && \
-    apk add  --update --no-cache postgresql-client &&  \
+    apk add  --update --no-cache postgresql-client  jpeg-dev &&  \
     apk add --update --no-cache --virtual .temp-build-deps\
-      build-base postgresql-dev musl-dev && \
+      build-base postgresql-dev musl-dev zlib  zlib-dev linux-headers && \
     pip install -r /temp/requirements.txt && \
     if [ $DEV = "true" ]; \
         then pip install -r /temp/requirements.dev.txt ; \
@@ -23,8 +24,15 @@ RUN pip install --upgrade pip && \
     adduser \
         --disabled-password \
         --no-create-home \
-        django-user
+        django-user && \
+    mkdir -p /vol/web/media && \
+    mkdir -p /vol/web/static && \
+    chown -R django-user:django-user /vol && \
+    chmod -R 755 /vol &&\
+    chmod -R +x /scripts
 
 
-ENV PATH="/djangorestframework/bin:$PATH"
+ENV PATH="/scripts:/djangorestframework/bin:$PATH"
 USER django-user
+
+CMD ["run.sh"]
